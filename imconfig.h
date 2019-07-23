@@ -79,21 +79,25 @@
 
 //---- Define constructor and implicit cast operators to convert back<>forth between your math types and ImVec2/ImVec4.
 // This will be inlined as part of ImVec2 and ImVec4 class declarations.
-/*
+#include "maths/vec.h"
+
 #define IM_VEC2_CLASS_EXTRA                                                 \
-        ImVec2(const MyVec2& f) { x = f.x; y = f.y; }                       \
-        operator MyVec2() const { return MyVec2(x,y); }
+ImVec2(const vec2f& f) { x = f.x; y = f.y; }                                \
+operator vec2f() const { return vec2f(x,y); }                               \
+template <typename T, size_t W, size_t...SW>                                \
+ImVec2(const Swizzle<T, W, SW...>& s) { size_t ii[] = {SW...}; x = s.v[ii[0]]; y = s.v[ii[1]]; }
 
 #define IM_VEC4_CLASS_EXTRA                                                 \
-        ImVec4(const MyVec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }     \
-        operator MyVec4() const { return MyVec4(x,y,z,w); }
-*/
+ImVec4(const vec4f& f) { x = f.x; y = f.y; z = f.z; w = f.w; }              \
+operator vec4f() const { return vec4f(x,y,z,w); }                           \
+template <typename T, size_t W, size_t...SW>                                \
+ImVec4(const Swizzle<T, W, SW...>& s) { size_t ii[] = {SW...}; x = s.v[ii[0]]; y = s.v[ii[1]]; z = s.v[ii[2]]; w = s.v[ii[3]]; }
 
 //---- Use 32-bit vertex indices (default is 16-bit) is one way to allow large meshes with more than 64K vertices.
 // Your renderer backend will need to support it (most example renderer backends support both 16/32-bit indices).
 // Another way to allow large meshes while keeping 16-bit indices is to handle ImDrawCmd::VtxOffset in your renderer.
 // Read about ImGuiBackendFlags_RendererHasVtxOffset for details.
-//#define ImDrawIdx unsigned int
+#define ImDrawIdx unsigned int
 
 //---- Override ImDrawCallback signature (will need to modify renderer backends accordingly)
 //struct ImDrawList;
@@ -115,9 +119,12 @@
 //#define IMGUI_DEBUG_PARANOID
 
 //---- Tip: You can add extra functions within the ImGui:: namespace, here or in your own headers files.
-/*
 namespace ImGui
 {
-    void MyFunction(const char* name, const MyMatrix44& v);
+    bool BeginCorner(const char* name, int corner);
+    bool SmallCheckbox(const char* label, bool* v);
+    bool ComboTrueFalse(const char* label, bool* v);
+    void PushStyleReadOnly();
+    void PopStyleReadOnly();
+    void HelpMarker(const char* desc);
 }
-*/
