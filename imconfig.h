@@ -118,6 +118,42 @@ ImVec4(const Swizzle<T, W, SW...>& s) { size_t ii[] = {SW...}; x = s.v[ii[0]]; y
 //---- Debug Tools: Enable slower asserts
 //#define IMGUI_DEBUG_PARANOID
 
+// we need to define our own wrapper and conversion for ImTextureID so that it can either be a generic fw::gfx::Texture
+// or a specific gfx API texture resource depending on the current platform
+namespace fw
+{
+    namespace gfx
+    {
+        // forward declaration to avoid including fw headers here
+        class Texture_t;
+    }
+}
+
+struct ImTextureWrapper
+{
+    ImTextureWrapper() { m_data = nullptr; }
+
+    // the overload for gfx::Texture will be defined in the platform dev ui
+    ImTextureWrapper(fw::gfx::Texture_t* t);
+    ImTextureWrapper(intptr_t t) { m_data = (void*)t; }
+    ImTextureWrapper(int t) { m_data = (void*)t; }
+
+    // covers conversions from ImTextureWrapper to pointers to types that ImGui uses
+    template<typename T>
+    ImTextureWrapper(T* t) { m_data = t; }
+
+    template <typename T>
+    operator T* () const { return (T*)m_data; }
+
+    operator intptr_t () const { return (intptr_t)m_data; }
+
+    // the pointer to the actual texture data ImGui uses (e.g. D3D11 texture SRV)
+    void* m_data;
+};
+inline bool operator==(ImTextureWrapper& a, ImTextureWrapper& b) { return a.m_data == b.m_data; }
+inline bool operator!=(ImTextureWrapper& a, ImTextureWrapper& b) { return a.m_data != b.m_data; }
+#define ImTextureID ImTextureWrapper
+
 //---- Tip: You can add extra functions within the ImGui:: namespace, here or in your own headers files.
 namespace ImGui
 {
