@@ -1171,12 +1171,12 @@ bool ImGui::CheckboxFlags(const char* label, unsigned int* flags, unsigned int f
     return CheckboxFlagsT(label, flags, flags_value);
 }
 
-bool ImGui::CheckboxFlags(const char* label, ImS64* flags, ImS64 flags_value)
+bool ImGui::CheckboxFlagsS64(const char* label, ImS64* flags, ImS64 flags_value)
 {
     return CheckboxFlagsT(label, flags, flags_value);
 }
 
-bool ImGui::CheckboxFlags(const char* label, ImU64* flags, ImU64 flags_value)
+bool ImGui::CheckboxFlagsU64(const char* label, ImU64* flags, ImU64 flags_value)
 {
     return CheckboxFlagsT(label, flags, flags_value);
 }
